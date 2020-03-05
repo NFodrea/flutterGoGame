@@ -13,10 +13,35 @@ BoxDecoration tileDecoration() {
   );
 }
 
+BoxDecoration whiteStone() {
+  return BoxDecoration(
+    color: Colors.white,
+    border: Border.all(
+      width: 1, //                   <--- border width here
+    ),
+    borderRadius:
+        BorderRadius.all(Radius.circular(5.0) //         <--- border radius here
+            ),
+  );
+}
+
+BoxDecoration blackStone() {
+  return BoxDecoration(
+    color: Colors.black,
+    border: Border.all(
+      width: 1, //                   <--- border width here
+    ),
+    borderRadius:
+        BorderRadius.all(Radius.circular(5.0) //         <--- border radius here
+            ),
+  );
+}
+
 class Go extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: "Go",
       home: Board(),
     );
@@ -33,10 +58,15 @@ class BoardState extends State<Board> {
   final int cols = 9;
 
   List<List<TileState>> uiState;
+  List<List<bool>> tiles;
 
   void resetBoard() {
     uiState = new List<List<TileState>>.generate(rows, (row) {
       return new List<TileState>.filled(cols, TileState.open);
+    });
+
+    tiles = new List<List<bool>>.generate(rows, (row) {
+      return new List<bool>.filled(cols, false);
     });
   }
 
@@ -47,46 +77,31 @@ class BoardState extends State<Board> {
   }
 
   Widget buildBoard() {
-    List<Row> boardRow = <Row>[];
-    for (int i = 0; i < rows; i++) {
-      List<Widget> rowChildren = <Widget>[];
-      for (int j = 0; j < cols; j++) {
-        TileState state = uiState[i][j];
-        if (state == TileState.open) {
-          rowChildren.add(GestureDetector(
-            child: Listener(
+    return Scaffold(
+      body: GridView.builder(
+          itemCount: 81,
+          gridDelegate:
+              SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 9),
+          itemBuilder: (BuildContext context, int index) {
+            return Container(
               child: Container(
                 decoration: tileDecoration(),
                 height: 40.0,
                 width: 40.0,
               ),
-            ),
-          ));
-        }
-      }
-      boardRow.add(Row(
-        children: rowChildren,
-        mainAxisAlignment: MainAxisAlignment.center,
-        key: ValueKey<int>(i),
-      ));
-    }
-
-    return Container(
-      color: Colors.grey[50],
-      child: Column(
-        children: boardRow,
-      ),
+            );
+          }),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[800],
       appBar: AppBar(
         title: Text('Go'),
       ),
       body: Container(
-        color: Colors.grey[50],
         child: Center(
           child: buildBoard(),
         ),
